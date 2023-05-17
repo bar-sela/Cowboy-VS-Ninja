@@ -1,0 +1,8 @@
+//
+// Created by Nachshon on 5/16/2023.
+//
+
+#ifndef MARACHOTBTASK4_CHARACTER_H
+#define MARACHOTBTASK4_CHARACTER_H
+
+#endif //MARACHOTBTASK4_CHARACTER_H
