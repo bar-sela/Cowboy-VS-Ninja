@@ -5,20 +5,31 @@
 #ifndef MARACHOTBTASK4_COWBOY_H
 #define MARACHOTBTASK4_COWBOY_H
 
+#include <sstream>
 #include "Character.hpp"
 
 class Cowboy : public Character {
     int numOfBullets ;
 
 public:Cowboy(string name,Point l ) : Character(l,110,name) , numOfBullets(6) {}; /// LIVES == נקודות פגיעה
-string print() override{
-    return "";
-};
-bool hasbooltes(){
-    return false;
+
+void shoot(Character* enemy);
+
+string print() override {
+        return Character::print() + ", C ";
+
+    };
+bool hasboolets(){
+    return numOfBullets > 0 ;
 }
-void reload(){};
-void shoot(Character*){};
+void reload(){
+    if(!this->isAlive())
+        throw std::runtime_error("");
+    this ->numOfBullets = 6 ;
+};
+
+
+///// getters
 int GetNumOfBullets(){
     return 0 ;
 };

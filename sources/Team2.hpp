@@ -12,7 +12,7 @@
 class Team2 : public Team{
 public:
     explicit Team2(Character* leader) : Team(leader){};
-    void add(Character *c) override{};
+    void add(Character *c) override;
 };
 
 

@@ -7,15 +7,21 @@
 
 #include "Character.hpp"
 class Ninja : public Character {
-private:
+protected:
     int speed ;
 protected:
     Ninja(Point &l , int lives , string &name,int speed) : Character(l, lives, name), speed(speed){};
 public:
-    void move(Character *){};
-    void slash(Character *){};
-    int GetLivesStart(){
-        return 0 ;
+    void move(Character *);
+    void slash(Character *);
+    string print() override {
+        return Character::print() + ", N ";
+    };
+    /// getters && setters
+    virtual int getSpeed() = 0;
+
+    void setLocation(Point& p){
+        this->getLocation() = p ; /// getLoaction returnes &Point
     }
 };
 

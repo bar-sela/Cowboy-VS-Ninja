@@ -14,23 +14,34 @@ private:
     Point location;
     int lives;
     string name ;
+    bool isMember ;
 protected:
-    Character( Point& location ,  int lives ,string &name  ) : location(location) , lives(lives) , name(name){}
+    Character( Point& location ,  int lives ,string &name  ) : location(location) , lives(lives) , name(name), isMember(
+            false) {}
 
 public:
+    virtual string print();
     string& getName(){
         return this->name;
     }
-    bool isAlive{};
-    Point& getLocation(){
-        return this->location;
-    }
-    virtual string print() = 0;
-    void hit(){
-    }
+    void hit(int number){
+        if(number < 0 )
+            throw std::invalid_argument("");
+        this->lives = max(0 , this->lives - number);
+    };
+    bool isAlive(){ return this->lives > 0 ;}
+    Point& getLocation(){ return this->location;}
+    double distance(Character* other );
+   ////// getters & setters
     int getLives(){
         return this->lives;
     };
+    bool getIsMember(){
+        return this->isMember;
+    }
+    void setIsMember(){
+        this->isMember = true;
+    }
 };
 
 

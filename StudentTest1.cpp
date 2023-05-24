@@ -277,7 +277,7 @@ TEST_SUITE("Battle related methods") {
         OldNinja old{"Bob", Point{random_float(0) + 15, random_float(0) + 15}};
         TrainedNinja trained{"Kung fu panda", Point{random_float(0) + 15, random_float(0) + 15}};
         YoungNinja young{"Karate kid", Point{random_float(0) + 15, random_float(0) + 15}};
-        Cowboy cowboy{"Clint", Point{0, 0}}; 
+        Cowboy cowboy{"Clint", Point{0, 0}};
 
         double old_distance = old.distance(&cowboy);
         double young_distance = young.distance(&cowboy);
@@ -455,15 +455,15 @@ TEST_SUITE("Battle simulations") {
         auto old_ninja = create_oninja(2, 2);
         auto young_ninja2 = create_yninja(3, 3);
         auto cowboy = create_cowboy(-6, -6);
-	auto cowboy2 = create_cowboy(-7, -7);
-	auto cowboy3 = create_cowboy(-8, -8);
+        auto cowboy2 = create_cowboy(-7, -7);
+        auto cowboy3 = create_cowboy(-8, -8);
         Team team2{young_ninja};
         team2.add(trained_ninja);
         team2.add(old_ninja);
         team2.add(young_ninja2);
         team2.add(cowboy);
-	team2.add(cowboy2);
-	team2.add(cowboy3);
+        team2.add(cowboy2);
+        team2.add(cowboy3);
 
         CHECK_EQ(team2.stillAlive(), 7);
 

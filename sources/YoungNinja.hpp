@@ -9,9 +9,14 @@
 class YoungNinja : public  Ninja{
 public :
     YoungNinja(string name , Point l) : Ninja(l, 100, name, 14){};
-    string print(){
-        return "";
-    };
+    /*
+      string print(){
+          return "";
+      };
+      */
+     int getSpeed() override{
+        return this->getSpeed();
+    }
 };
 
 

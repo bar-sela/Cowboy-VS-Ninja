@@ -1,28 +1,48 @@
-#include "Point.hpp"
+/**
+ * Demo file for the exercise on binary tree
+ *
+ * @author Evgeny Hershkovitch Neiterman
+ * @since 2023-03
+ */
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
+#include <cassert>
+using namespace std;
+
+#include "sources/Team.hpp" //no need for other includes
+#include "sources/SmartTeam.hpp"
+
+using namespace ariel;
 
 
-int main(){
-Point p1{1, 1};
-Point p2{2, 3};
-Point n1{-1, 1};
-Point n2{1, -9};
-Point n3{-1, -1};
+int main() {
+    Point a(32.3,44),b(1.3,3.5);
+    assert(a.distance(b) == b.distance(a));
+    Cowboy *tom = new Cowboy("Tom", a);
+    OldNinja *sushi = new OldNinja("sushi", b);
+    OldNinja *kioshi = new OldNinja("kioshi", Point(3,1));
+    OldNinja *kioshi2 = new OldNinja("kioshi", Point(4,1));
+    SmartTeam smartTeam(tom);
+    smartTeam.add(sushi);
+    smartTeam.add(kioshi);
+    smartTeam.add(kioshi2);
+    Cowboy *to = new Cowboy("Tom", a);
+    OldNinja *sush = new OldNinja("sushi", b);
+    OldNinja *kiosh = new OldNinja("kioshi", Point(3,1));
+    OldNinja *kiosh2 = new OldNinja("kioshi", Point(4,1));
+    Team team(to);
+    team.add(sush);
+    team.add(kiosh);
+    team.add(kiosh2);
+    while (smartTeam.stillAlive() && team.stillAlive()){
+        team.attack(&smartTeam);
+        smartTeam.attack(&team);
+    }
 
 
 
 
-double distance = p1.distance(p2);
-double half_p = distance / 2;
-double third_p = distance / 3;
-
-cout << "third_p :" + to_string(third_p*2) << endl ;
-Point p3{Point::moveTowards(p1, p2, half_p)};
-cout << (p3.distance(p2)) << endl ;
-
-Point p4{Point::moveTowards(p1, p2, third_p)};
-cout << (p4.distance(p2))<<endl ;
-
-// There is no such a thing as negative distance
-//CHECK_THROWS_AS(Point::moveTowards(p1, p2, -1),std::invalid_argument);
 }
-

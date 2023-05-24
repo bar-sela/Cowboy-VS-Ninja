@@ -11,9 +11,14 @@
 class OldNinja : public Ninja{
 public :
     OldNinja (string name, Point l ) : Ninja(l, 150, name, 8){};
+/*
      string print() override{
          return "";
      };
+     */
+    int getSpeed() override{
+        return this->getSpeed();
+    }
 };
 
 

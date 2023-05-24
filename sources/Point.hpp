@@ -20,9 +20,7 @@ private:
 
 public:
     Point() : x(0.0), y(0.0) {}
-
     Point(double x, double y) : x(x), y(y) {}
-
     // Getter methods
     double getX() const {
         return x;
@@ -39,20 +37,14 @@ public:
     void setY(double y) {
         this->y = y;
     }
-    bool equals(const Point& other) const {
+    bool operator == (const Point& other) const {
         return (this->x == other.x) && (this->y == other.y);
     }
-    // Function to calculate the distance between two points
-    double distance(const Point& other) const {
-        return 0;
+    string toString() const {
+        return  "(" + std::to_string(this->x) + ", " + std::to_string(this->y) + ")";
     }
-    void toString() const {
-        cout << "(" << this->x << ", " << this->y << ")"<<endl;
-
-    }
-    static Point & moveTowards(Point & src , Point & target, double r ){
-        return src;
-    }
+    double distance(const Point& other) const ;
+    static Point  moveTowards(Point & src , Point & target, double r );
 };
 
 

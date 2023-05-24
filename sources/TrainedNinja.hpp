@@ -11,9 +11,14 @@
 class TrainedNinja : public Ninja{
 public :
     TrainedNinja(string name ,Point l) : Ninja(l, 120, name, 12){};
+/*
     string print(){
         return "";
     };
+    */
+    int getSpeed() override{
+        return this->getSpeed();
+    }
 };
 
 

@@ -12,37 +12,59 @@
 #include "Cowboy.hpp"
 #include "OldNinja.hpp"
 #include "YoungNinja.hpp"
+#include "TrainedNinja.hpp"
 #include "Character.hpp"
 
 namespace ariel{};
 
 class Team {
-    std::array<Character*, 10> characters ;
+protected:
+    Character *victim;
+    Character *leader;
+    int size;
+    bool isFirstAttack ;
+    /// like arr Character*[10] in c. no need for pointer beacuse we already know the size we want - 10
+    array<Character *, 10> characters;
 public:
-    Team(Character* leader){};
-    virtual void add(Character * character) {};
-    int stillAlive(){
-        return 0;
+    Team(Character *leader) :victim(nullptr), leader(leader), size(0) , isFirstAttack(true)  {
+        this->add(leader);
     };
-    string print(){
-        return "";
-    };
-    void attack(Team*){};
-    ~Team(){};
-
-    Character* getChARCTERinIndex(unsigned long  index){
-        return  this->characters[index];
+    virtual void addToArray(Character *character);
+    void identationBy1(int startDex);
+   virtual void add(Character* c);
+    int foundFirstIndexOfCowboy();
+    int stillAlive();
+    virtual void attack(Team* attackedTeam) ;
+    void print();
+    void foundNewVictim(Team *victims);
+    static void Cowboy_attack_in_team(Cowboy* cowboy , Character* victim){
+        cowboy->hasboolets() ? cowboy->shoot(victim) : cowboy->reload();
     }
-
-    unsigned  long foundFirstIndexOfCowboy(){
-        for(unsigned  long i = 0 ; i < 10 ; i++){
-            if(typeid(this->characters[i]).name() == typeid(Cowboy).name())
-                return i ;
-        }
-        return 0;
+    static void Ninja_attack_in_team(Ninja* ninja , Character* victim){
+        double distance = ninja->distance(victim);
+        distance > 1 ? ninja->move(victim) : ninja->slash(victim);
     }
+    static Character* closestToLeader(Character* leader , array<Character *, 10>& array,int size);
+    ~Team() {};
 
+
+//// get
+  int getSize(){
+      return this->size;
+  }
+    void addSize(){
+        this->size ++ ;
+    }
+    array<Character *, 10>& get_charactersArray(){
+        return this->characters;
+  }
+
+  void updateAfterADD(Character* c ){
+      this->size +=1 ;
+      c->setIsMember();
+  }
 };
+
 
 
 #endif //MARACHOTBTASK4_TEAM_HPP
