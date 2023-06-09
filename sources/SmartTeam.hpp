@@ -10,135 +10,123 @@
 #include <algorithm>
 
 
-class SmartTeam : public Team2 {
+class SmartTeam : public Team {
 protected:
-    vector<int> CowboyVector;
+    vector<Character *> allTeam;
+    vector<Ninja *> CloseNinjas;
+    vector<Cowboy *> CowboyVector;
     vector<Ninja *> NINJAVector;
-    Character *victim;
 
 public:
-    SmartTeam(Character* leader): Team2(leader){
+    SmartTeam(Character *leader) : Team(leader) {
+        Team::add(leader);
     };
-    vector<int> chooseClosessVictimToOurNinjas(Team *t ,  vector<Ninja *>& CopyNinja) {
-        bool done = false;
-        int i = 0;
-        int largest = 0;
-        std::vector<int> ans;
-        while (!done) {
-            ///test a member of the other team. count how many close ninjas are they to him
 
-            for (size_t j = 0; j < t->getSize(); j++) {
+    void add(Character *c) override {
+        Team::add(c);
+        if (typeid(c).name() == typeid(Cowboy).name())
+            this->CowboyVector.push_back(dynamic_cast<Cowboy *>(c));
+        else
+            NINJAVector.push_back(dynamic_cast<Ninja *>(c));
+    }
 
-                int countCloseNinjaForEnemy = 0;
-                std::vector<int> temp;   //// vector ans is the optimize temp
-                Character *testedEnemy = t->get_charactersArray()[j];
-                temp.push_back(j);
+    static void delete_vectorElements_from_vector(vector<Ninja *> v1, vector<Ninja *> v2) {
+       for(int i = 0 ; i < v2.size(); i ++){
+           for(int j = 0 ; j < v1.size(); j ++){
+               if(v1.at(i) == v2.at(j))
+                   v1.erase(v1.begin()+ i);
+            }
+        }
+    }
+    static Character* getRandomAliveMember( array<Character *, 10> characters){
+        for(auto member : characters){
+            if(member->isAlive())
+                return member;
+        }
+        return nullptr;
+    }
 
-                if (!testedEnemy->isAlive())
+
+    Character *foundVictim(Team *attackedTeam , vector<Ninja*>& ninja_copy_vector) {
+        /// intilize the maximum number of closed attacking characters to victim from attackedTeam
+        int maximum_Attackers = 0;
+
+        Character *nextVictim = nullptr ;
+
+
+        /// loop all potential victims
+        for (Character *potenialVictim: attackedTeam->get_charactersArray()) {
+            if(!potenialVictim->isAlive())
+                continue;
+
+            int counter_close_ninjas = 0;
+            vector<Ninja *> close_Ninjas_to_potenial_victim;
+            int number_of_close_ninjas_needed = ceil(potenialVictim->getLives() / 40.0);/// example : 110 lives -> no need more then 3 close ninjas
+
+
+            for (Ninja *attackerNinja: this->NINJAVector) {
+                if(!attackerNinja->isAlive())
                     continue;
 
-                /// itereate all the Characters of other team for determine enemy
-                for (size_t k = 0; k < this->size; k++) {
-                    Character *curMember = this->characters[k];
-                    string s = typeid(curMember).name();
-                    /// we want to detect close ninjas . distance dosent effect the shoot of cowboys
-                    if (typeid(curMember).name() != typeid(Ninja).name() || !curMember->isAlive())
-                        continue;
-
-                    double distacnce = testedEnemy->distance(curMember);
-                    YoungNinja *curNinja = (YoungNinja *) curMember;
-                    /// if the ninja is defined as close for this itertation upgrade the counter by 1
-                    double value  = (distacnce - i * curNinja->getSpeed());
-                    if (1 > max(value, 0.0)) {
-
-                        countCloseNinjaForEnemy++;
-                        CopyNinja.erase(CopyNinja.begin() + int(k) );
-                        temp.push_back(k);
-                        done = true;
-
-                    }
+                if (potenialVictim->distance(attackerNinja) <= 1) {
+                    counter_close_ninjas++;
+                    close_Ninjas_to_potenial_victim.push_back(attackerNinja);
                 }
-                /// if we found a character from other team with more close ninjas to him , temparary he is the next victim
-                if (countCloseNinjaForEnemy > largest) {
-                    largest = countCloseNinjaForEnemy;
-                    ans = temp;
+
+                /// cheaking if this potential victim has the most closeNinjas meanwhile
+                if (counter_close_ninjas > maximum_Attackers) {
+                    /// update all of them
+                    maximum_Attackers = counter_close_ninjas;   ///
+                    nextVictim = potenialVictim;
+                    this->CloseNinjas = close_Ninjas_to_potenial_victim;
                 }
+                /// for every potintail victim we dont need more ninjas closed to him then the amount of ninjav needed to kill him
+                if (counter_close_ninjas >= number_of_close_ninjas_needed)
+                    break;  /// up to the next poteintial victim
             }
-            i++;
         }
-        return ans;
+        /// delete from ninja_copy_vector all the close ninjas to the choosen victim
+        delete_vectorElements_from_vector(ninja_copy_vector, this->CloseNinjas);
+
+        /// in Case - no close ninja to every Character -> peek random victim
+        if(nextVictim == nullptr)
+            getRandomAliveMember(this->characters);
+
+        return nextVictim;
     }
 
-    void swap(size_t i, size_t j) {
-        Character *temp = this->characters[i];
-        this->characters[i] = this->characters[j];
-        this->characters[j] = temp;
-    }
+    void attack(Team *attackedTeam) override {
+        /// copy to both Cowboy vector and Ninja vector
+        vector<Cowboy *> Copy_cowboy_vector(this->CowboyVector);
+        vector<Ninja *> Copy_Ninja_vector(this->NINJAVector);
 
-    void CoboysBefureNinjas() {
 
-    }
+        for(Character* c : this->characters){
+            /// if the attacked team is dead -> no need to attack
+            if(!attackedTeam->stillAlive())
+                return ;
 
-    void attack2(Team *t) {
-        vector<Ninja *> copyNINJAs = this->NINJAVector;
-        int index;
-        for (int times = 0; times < 2; times++) {
-            vector<int> v = chooseClosessVictimToOurNinjas(t, copyNINJAs);
-            /// get the ememy at v[0] , v[i] for i != 0 are the close Ninjas to enemy
-            int indexOfNewenemy = v.at(0);
-            v.erase(v.begin());
-            int lives = t->get_charactersArray()[size_t(indexOfNewenemy)]->getLives();
-            int number_of_ninjas_needed = (lives / 40);
-            int numberOfcloseNinjas = v.size();
-
-            /// numberOf close Ninja were passing to the begining of the array
-            numberOfcloseNinjas < number_of_ninjas_needed ? index = numberOfcloseNinjas
-                                                          : index = number_of_ninjas_needed;
-
-            //// take close ninja to front of the array
-            for (size_t i = 0; i < index; i++) {
-                swap(i, size_t(v.at(0)));
-                v.erase(v.begin());
+            /// if the previus victim is dead found a new
+            if(! this->victim->isAlive() )
+                this->victim = foundVictim(attackedTeam, Copy_Ninja_vector);
+            /// loop the close Ninjas vector :
+            for(auto member : this->CloseNinjas){
+                adapting_attack(this->CloseNinjas);
             }
-            int currentIndexInArr = index;
-            //// preperae a list if the indexes of all the Cowboys
 
-            for (size_t i = 0; i < size; i++) {
-                if (typeid(this->characters[i]).name() == typeid(Cowboy).name())
-                    this->CowboyVector.push_back(i);
-            }
-            //// put Cowboys right after the Ninja we already puted to kill the Vitcim
-            if (this->CowboyVector.size() * 10 > lives % 40) {
-                for (size_t i = 0; i * 10 < lives % 40 && i < this->CowboyVector.size(); i++) {
-                    this->swap(i, size_t(this->CowboyVector.at(0)));
-                    this->CowboyVector.erase(this->CowboyVector.begin());
-                    index++;
-                }
+
+        }
+    }
+    template<typename T>
+        void adapting_attack(vector<T> vector) {
+            for (auto member: vector) {
+                if (typeid(*member) == typeid(Cowboy))
+                    Cowboy_attack_in_team((Cowboy *) member, this->victim);
+                else
+                    Ninja_attack_in_team((Ninja *) member, this->victim);
             }
         }
     }
-    void attack(Team* t){
-        vector<Ninja *> copyNINJAs = this->NINJAVector;
-        attack2(t);
-      ///// the attacking loop it-itself
-        for(size_t k = 0 ; k < this->size; k ++){
-            this->chooseClosessVictimToOurNinjas(t,copyNINJAs);
-              Character* teamMember = this->characters[(size_t)k];
-              if(!teamMember->isAlive())
-                  continue;
 
-              if (typeid(*teamMember) == typeid(Cowboy))
-                  Cowboy_attack_in_team((Cowboy*)teamMember, this->victim);
-              else
-                  Ninja_attack_in_team((Ninja*)teamMember,this->victim);
-          }
-
-    }
-    void add(Character* c ){
-        Team2::add(c);
-        if(typeid(c).name() != typeid(Cowboy).name())
-            this->NINJAVector.push_back((Ninja*)c);
-    }
-};
-
+;
 #endif //MARACHOTBTASK4_SMARTTEAM_HPP
